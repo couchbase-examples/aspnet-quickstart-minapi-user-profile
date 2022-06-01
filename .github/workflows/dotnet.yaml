@@ -73,11 +73,17 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: | 
+        cd src/Couchbase.Quickstart  
+        dotnet restore
     - name: Build
-      run: dotnet build --configuration Debug --no-restore 
+      run: |
+        cd src/Couchbase.Quickstart  
+        dotnet build --configuration Debug --no-restore 
     - name: Test
-      run: timeout 120 dotnet test --no-build --verbosity normal 
+      run: |
+        cd src/Couchbase.Quickstart  
+        timeout 120 dotnet test --no-build --verbosity normal 
     - name: Report Status
       if: always()
       uses: ravsamhq/notify-slack-action@v1
