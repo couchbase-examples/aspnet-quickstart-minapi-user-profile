@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using Couchbase.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
+﻿using Couchbase.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -131,55 +129,55 @@ app.MapGet("/api/v1/profiles/{id}", async (Guid id, IBucketProvider bucketProvid
     try
     {
         //get couchbase config values from appsettings.json 
-        var couchbaseConfig = options.Value;
+        var couchbaseConfig = options.Value; // <1>
 
         //get the bucket, scope, and collection
-        var bucket = await bucketProvider.GetBucketAsync(couchbaseConfig.BucketName);
-        var scope = bucket.Scope(couchbaseConfig.ScopeName);
-        var collection = scope.Collection(couchbaseConfig.CollectionName);
+        var bucket = await bucketProvider.GetBucketAsync(couchbaseConfig.BucketName); // <2>
+        var scope = bucket.Scope(couchbaseConfig.ScopeName); // <3>
+        var collection = scope.Collection(couchbaseConfig.CollectionName); // <4>
 
         //get the docment from the bucket using the id
-        var result = await collection.GetAsync(id.ToString());
+        var result = await collection.GetAsync(id.ToString()); // <5>
 
         //validate we have a document
-        var resultProfile = result.ContentAs<Profile>();
-        if (resultProfile != null)
+        var resultProfile = result.ContentAs<Profile>(); // <6>
+        if (resultProfile != null) // <6>
         {
-            return Results.Ok(resultProfile);
+            return Results.Ok(resultProfile); // <6>
         }
     }
     catch (Couchbase.Core.Exceptions.KeyValue.DocumentNotFoundException)
     {
-        Results.NotFound();
+        Results.NotFound(); // <7>
     }
     catch (Exception ex)
     {
         return Results.Problem(ex.Message);
     }
 
-    return Results.NotFound();
+    return Results.NotFound(); 
 
 });
 
-app.MapPost("/api/v1/profiles", async (ProfileCreateRequestCommand request, IBucketProvider bucketProvider, IOptions<CouchbaseConfig> options) =>
-{
+app.MapPost("/api/v1/profiles", async (ProfileCreateRequestCommand request, IBucketProvider bucketProvider, IOptions<CouchbaseConfig> options) => // <1>
+{ 
     //get couchbase config values from appsettings.json 
-    var couchbaseConfig = options.Value;
+    var couchbaseConfig = options.Value;  // <2>
 
     //get the bucket, scope, and collection
-    var bucket = await bucketProvider.GetBucketAsync(couchbaseConfig.BucketName);
-    var scope = bucket.Scope(couchbaseConfig.ScopeName);
-    var collection = scope.Collection(couchbaseConfig.CollectionName);
+    var bucket = await bucketProvider.GetBucketAsync(couchbaseConfig.BucketName); // <3>
+    var scope = bucket.Scope(couchbaseConfig.ScopeName); // <4>
+    var collection = scope.Collection(couchbaseConfig.CollectionName); // <5>
 
     //get profile from request
-    var profile = request.GetProfile();
+    var profile = request.GetProfile(); // <6>
 
     //set documentId 
-    profile.Pid = Guid.NewGuid();
+    profile.Pid = Guid.NewGuid(); // <7>
 
     //save documentg
-    await collection.InsertAsync(profile.Pid.ToString(), profile);
-    return Results.Created($"/api/v1/profile/{profile.Pid}", profile);
+    await collection.InsertAsync(profile.Pid.ToString(), profile); // <8>
+    return Results.Created($"/api/v1/profile/{profile.Pid}", profile); // <9>
 });
 
 app.MapPut("/api/v1/profiles", async (ProfileUpdateRequestCommand request, IBucketProvider bucketProvider, IOptions<CouchbaseConfig> options) =>
