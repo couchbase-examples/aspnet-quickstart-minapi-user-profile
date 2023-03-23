@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
     <PackageReference Include="CouchbaseNetClient" Version="3.4.3" />
-    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.3.0" />
+    <PackageReference Include="Couchbase.Extensions.DependencyInjection" Version="3.4.4" />
     <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
   </ItemGroup>
 
